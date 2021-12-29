@@ -10,13 +10,14 @@ import java.nio.charset.StandardCharsets;
 public class Main {
 
     final static int CONNECTION_TIMEOUT = 10000;
+    final static String API_KEY = "C8Wqy2FysAowMwqUrjPHyJ11caLEpYzwSdLPKLaJ";
 
     public static void main(String[] args) throws IOException {
         System.out.println("HI IT'S POST");
 
         //для работы с ресурсами в интеренете используем специальный класс
         //URL хранит путь к интерент ресурсу
-        var url = new URL("https://api.challonge.com/v1/tournaments.json?api_key=C8Wqy2FysAowMwqUrjPHyJ11caLEpYzwSdLPKLaJ");
+        var url = new URL("https://api.challonge.com/v1/tournaments.json?api_key=" + API_KEY);
         //Открываем соединение с URL, позволяя клиенту взаимодействовать с ресурсом
         //Преобразуем возвращаемый тип данных HttpURLConnection, зачем?
         // Для того что бы выполнить задуманное, а точнне нам нужен метод "setRequestMethod" для Методов запросов
@@ -24,14 +25,16 @@ public class Main {
         //вставочка про методы Http
         //тело запроса
         httpURLConnection.setRequestMethod("POST");
+        //используется для того, чтобы определить MIME тип ресурса
         httpURLConnection.setRequestProperty("Content-Type", "application/json; utf-8");
         //Осталось только отправить запрос записав в тело наш токен и лимит, в данном примере токен передаем в url по этому в теле его передавать не будем,
         // хотя исходя из документации поддержка этого есть
         httpURLConnection.setConnectTimeout(CONNECTION_TIMEOUT);
         httpURLConnection.setReadTimeout(CONNECTION_TIMEOUT);
-        // Отправляем запрос. Для этого устанавливаем поле doOutput объекта URLConnection в положение true, используя метод setDoOutput();
+        // Так как мы используем POST следуя документации мы должны установить поле doOutput объекта URLConnection в положение true, используя метод setDoOutput();
         httpURLConnection.setDoOutput(true);
 
+        //Откуда эта строка? https://api.challonge.com/ru/v1/documents/tournaments/create
         var jsonInputString = "{\n" +
                 "  \"tournament\": {\n" +
                 "    \"name\": \"Турнир #2\"\n" +
@@ -54,7 +57,9 @@ public class Main {
                 //Reader - это класс в package java.io, который является базовым классом,
                 // представляющим поток символов (stream of characters),
                 // полученных при чтении определенного источника данных, например текстового файла.
-                var inputStreamReader = new InputStreamReader(httpURLConnection.getInputStream(), StandardCharsets.UTF_8);
+                var inputStreamReader = new InputStreamReader(
+                        httpURLConnection.getInputStream(),
+                        StandardCharsets.UTF_8);
                 //BufferedReader - это подкласс Reader, который используется для упрощения чтения текста из потоков ввода символов
                 // (character input stream) и повышения производительности программы.
                 var bufferedReader = new BufferedReader(inputStreamReader)) {
@@ -76,7 +81,7 @@ public class Main {
         System.out.println("HI IT'S GET");
 
         //модифицируем пример для получения ответа
-        final var url = new URL("https://api.challonge.com/v1/tournaments/10634350.json?api_key=C8Wqy2FysAowMwqUrjPHyJ11caLEpYzwSdLPKLaJ");
+        final var url = new URL("https://api.challonge.com/v1/tournaments/10634350.json?api_key=" + API_KEY);
         final var httpURLConnection = (HttpURLConnection) url.openConnection();
 
         httpURLConnection.setRequestMethod("GET");
@@ -89,12 +94,12 @@ public class Main {
         try (
                 var inputStreamReader = new InputStreamReader(httpURLConnection.getInputStream(), StandardCharsets.UTF_8);
                 var bufferedReader = new BufferedReader(inputStreamReader)) {
-            var StringBuilderResponse = new StringBuilder();
+            var stringBuilderResponse = new StringBuilder();
             String inputLine;
             while ((inputLine = bufferedReader.readLine()) != null) {
-                StringBuilderResponse.append(inputLine);
+                stringBuilderResponse.append(inputLine);
             }
-            System.out.println(StringBuilderResponse.toString());
+            System.out.println(stringBuilderResponse.toString());
         }
     }
 
